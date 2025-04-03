@@ -7,7 +7,6 @@ from mitsuba.ad.integrators.common import mis_weight  # type: ignore
 
 from .common import TransientADIntegrator
 
-
 class TransientPath(TransientADIntegrator):
     r"""
     .. _integrator-transient_path:
@@ -185,10 +184,8 @@ class TransientPath(TransientADIntegrator):
                 mis_em = dr.select(
                     ds.delta, 1, mis_weight(ds.pdf, bsdf_pdf_em))
                 Lr_dir = β * mis_em * bsdf_value_em * em_weight
-
+            
             # Add contribution direct emitter sampling
-            add_transient(Lr_dir, distance + ds.dist *
-                          η, ray.wavelengths, active)
 
             # ------------------ Detached BSDF sampling -------------------
 
@@ -196,7 +193,11 @@ class TransientPath(TransientADIntegrator):
                                                    sampler.next_1d(),
                                                    sampler.next_2d(),
                                                    active_next)
+            
+            distance += bsdf.temporal_delay(si, sampler.next_2d(), bsdf_sample, active)
 
+            add_transient(Lr_dir, distance + ds.dist *
+                          η, ray.wavelengths, active)
             # ---- Update loop variables based on current interaction -----
 
             L = (L + Le + Lr_dir) if primal else (L - Le - Lr_dir)

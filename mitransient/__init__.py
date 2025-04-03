@@ -24,6 +24,8 @@ from .integrators import *
 from .render import *
 from .films import *
 from .sensors import *
+from .bsdfs import *
+from .temporal_profiles import *
 
 from .utils import speed_of_light, cornell_box
 from . import nlos
