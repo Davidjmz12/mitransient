@@ -1,4 +1,5 @@
 import mitsuba as mi
+import drjit as dr
 from mitransient.temporal_profiles.common import TemporalProfile
 
 
@@ -16,5 +17,8 @@ class ConstantProfile(TemporalProfile):
         delay = float(props.get('delay', 0.0))
         return ConstantProfile(delay)
 
-    def temporal_delay(self, si:mi.SurfaceInteraction3f, sample1:mi.Point2f) -> mi.Float:
+    def sample_delay(self, si:mi.SurfaceInteraction3f, sample1:mi.Point2f) -> mi.Float:
         return mi.Float(self.delay)
+
+    def eval_delay(self, delay: mi.Float) -> mi.Float:
+        return dr.select(delay == self.delay, 1.0, 0.0)

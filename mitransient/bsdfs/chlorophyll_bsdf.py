@@ -11,21 +11,21 @@ class ChlorophyllBSDF(mi.BSDF):
                 <rgb name="reflectance" value="0.570068, 0.0430135, 0.0443706"/>
             </bsdf>"'''
         )
-        self.color_red_delay = 3.0
+        self.color_red_delay = ConstantProfile(3.0)
 
         self.color_green = mi.load_string(
             '''"<bsdf version='2.0.0' type='diffuse'>
                 <rgb name="reflectance" value="0.105421, 0.37798, 0.076425"/>
             </bsdf>"''')
-        self.color_green_delay = 0.0
+        self.color_green_delay = ConstantProfile(0.0)
 
-        self.green_prob = 0.8
+        self.green_prob = 0.5
         # Set the BSDF flags
         self.m_flags = mi.BSDFFlags.DiffuseReflection | mi.BSDFFlags.FrontSide
         self.m_components = [self.m_flags]
 
 
-    def sample(self, ctx, si, sample1, sample2, active):
+    def sample_t(self, ctx, si, sample1, sample2, active):
 
         selected_r  = (sample1 <= self.green_prob) & active
 
@@ -35,41 +35,20 @@ class ChlorophyllBSDF(mi.BSDF):
         bs.sampled_component = dr.select(selected_r, 1, 2)
         selected_value = dr.select(selected_r, green_value, red_value)
 
-        return bs, selected_value
+        delay = dr.select(selected_r, 
+                          self.color_green_delay.sample_delay(si, sample1), 
+                          self.color_red_delay.sample_delay(si, sample1))
 
-    def temporal_delay(self, si, random_sample, sample_data, active):
-        
-        delay = dr.select(sample_data.sampled_component==1,
-                          self.color_green_delay,
-                          self.color_red_delay)
-       
-        return delay
+        return bs, selected_value, delay
 
-    # def eval(self, ctx, si, wo, active):
-    #     return self.color_red.eval(ctx, si, wo, active)
-    # def pdf(self, ctx, si, wo, active):
-    #     return self.color_red.pdf(ctx, si, wo, active)
-    # def eval_pdf(self, ctx, si, wo, active):
-    #     return self.color_red.eval_pdf(ctx, si, wo, active)
-
-    # def eval(self, ctx, si, wo, active):
-    #     return self.color_green.eval(ctx, si, wo, active)
-    # def pdf(self, ctx, si, wo, active):
-    #     return self.color_green.pdf(ctx, si, wo, active)
-    # def eval_pdf(self, ctx, si, wo, active):
-    #     return self.color_green.eval_pdf(ctx, si, wo, active)
-
-    def eval(self, ctx, si, wo, active):
-        return  self.color_green.eval(ctx, si, wo, active)*(self.green_prob) + \
-                self.color_red.eval(ctx, si, wo, active)*(1-self.green_prob)
+    def eval_t(self, ctx, si, wo, t, active):
+        return  self.color_green.eval(ctx, si, wo, active)*self.color_green_delay.eval_delay(t)*(self.green_prob) + \
+                self.color_red.eval(ctx, si, wo, active)*self.color_red_delay.eval_delay(t)*(1-self.green_prob)
 
 
-    def pdf(self, ctx, si, wo, active):
-        return  self.color_green.pdf(ctx, si, wo, active)*(self.green_prob) + \
-                self.color_red.pdf(ctx, si, wo, active)*(1-self.green_prob)
-
-    def eval_pdf(self, ctx, si, wo, active):
-        return self.eval(ctx, si, wo, active), self.pdf(ctx, si, wo, active)
+    def pdf_t(self, ctx, si, wo, t, active):
+        return  self.color_green.pdf(ctx, si, wo, active)*self.color_green_delay.eval_delay(t)*(self.green_prob) + \
+                self.color_red.pdf(ctx, si, wo, active)*self.color_red_delay.eval_delay(t)*(1-self.green_prob)
 
     def traverse(self, callback):
         pass

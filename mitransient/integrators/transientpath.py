@@ -104,6 +104,7 @@ class TransientPath(TransientADIntegrator):
         prev_si = dr.zeros(mi.SurfaceInteraction3f)
         prev_bsdf_pdf = mi.Float(1.0)
         prev_bsdf_delta = mi.Bool(True)
+        prev_delay = mi.Float(0.0)
 
         if self.camera_unwarp:
             si = scene.ray_intersect(mi.Ray3f(ray),
@@ -179,25 +180,25 @@ class TransientPath(TransientADIntegrator):
 
                 # Evaluate BSDF * cos(theta) differentiably
                 wo = si.to_local(ds.d)
-                bsdf_value_em, bsdf_pdf_em = bsdf.eval_pdf(
-                    bsdf_ctx, si, wo, active_em)
+                bsdf_value_em, bsdf_pdf_em = bsdf.eval_pdf_t(
+                    bsdf_ctx, si, wo, prev_delay, active_em)
                 mis_em = dr.select(
                     ds.delta, 1, mis_weight(ds.pdf, bsdf_pdf_em))
                 Lr_dir = β * mis_em * bsdf_value_em * em_weight
             
             # Add contribution direct emitter sampling
+            add_transient(Lr_dir, distance + ds.dist *
+                          η, ray.wavelengths, active)
 
             # ------------------ Detached BSDF sampling -------------------
 
-            bsdf_sample, bsdf_weight = bsdf.sample(bsdf_ctx, si,
+            bsdf_sample, bsdf_weight, delay = bsdf.sample_t(bsdf_ctx, si,
                                                    sampler.next_1d(),
                                                    sampler.next_2d(),
                                                    active_next)
-            
-            distance += bsdf.temporal_delay(si, sampler.next_2d(), bsdf_sample, active)
+            distance += delay
 
-            add_transient(Lr_dir, distance + ds.dist *
-                          η, ray.wavelengths, active)
+
             # ---- Update loop variables based on current interaction -----
 
             L = (L + Le + Lr_dir) if primal else (L - Le - Lr_dir)
@@ -211,6 +212,7 @@ class TransientPath(TransientADIntegrator):
             prev_bsdf_pdf = bsdf_sample.pdf
             prev_bsdf_delta = mi.has_flag(
                 bsdf_sample.sampled_type, mi.BSDFFlags.Delta)
+            prev_delay = delay
 
             # -------------------- Stopping criterion ---------------------
 
@@ -246,7 +248,7 @@ class TransientPath(TransientADIntegrator):
                     wo = si.to_local(ray.d)
 
                     # Re-evaluate BSDF * cos(theta) differentiably
-                    bsdf_val = bsdf.eval(bsdf_ctx, si, wo, active_next)
+                    bsdf_val = bsdf.eval_t(bsdf_ctx, si, wo, delay, active_next)
 
                     # Detached version of the above term and inverse
                     bsdf_val_det = bsdf_weight * bsdf_sample.pdf

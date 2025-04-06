@@ -8,8 +8,11 @@ class TemporalProfile(mi.Object):
     def create(props: mi.Properties) -> "TemporalProfile":
         raise NotImplementedError("\"create\" method must be implemented in subclass")
 
-    def temporal_delay(self, si:mi.SurfaceInteraction3f, sample1:mi.Point2f) -> mi.Float:
-        raise NotImplementedError("\"temporal_delay\" method must be implemented in subclass")
+    def sample_delay(self, si:mi.SurfaceInteraction3f, sample1:mi.Point2f) -> mi.Float:
+        raise NotImplementedError("\"sample_delay\" method must be implemented in subclass")
+    
+    def eval_delay(self, delay:mi.Float) -> mi.Float:
+        raise NotImplementedError("\"eval_delay\" method must be implemented in subclass")
 
     def to_string(self) -> str:
         raise NotImplementedError("\"to_string\" method must be implemented in subclass")
