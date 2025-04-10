@@ -20,5 +20,5 @@ class ConstantTextureProfile(TemporalProfile):
     def sample_delay(self, si, sample1):
         return self.texture.eval_1(si)
     
-    def eval_delay(self, si, delay):
+    def eval_delay(self, delay, si):
         raise NotImplementedError("eval_delay not implemented for ConstantTextureProfile")

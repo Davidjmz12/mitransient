@@ -22,5 +22,5 @@ class ExponentialProfile(TemporalProfile):
     def sample_delay(self, si, sample1):
         return mi.Float(-1.0)/mi.Float(self.lambd)*dr.log(mi.Float(1)-sample1.x)
     
-    def eval_delay(self, si, delay):
+    def eval_delay(self, delay, si):
         return mi.Float(self.lambd)*dr.exp(-mi.Float(delay)*mi.Float(self.lambd))

@@ -46,14 +46,14 @@ class ChlorophyllBSDF(mi.BSDF):
         return bs, selected_value, delay
 
     def eval_t(self, ctx, si, wo, t, active):
-        return  self.color_green.eval(ctx, si, wo, active)*self.color_green_delay.eval_delay(t)*(self.green_prob) + \
-                self.color_red.eval(ctx, si, wo, active)*self.color_red_delay.eval_delay(t)*(1-self.green_prob)
+        return  self.color_green.eval(ctx, si, wo, active)*self.color_green_delay.eval_delay(t, si)*(self.green_prob) + \
+                self.color_red.eval(ctx, si, wo, active)*self.color_red_delay.eval_delay(t, si)*(1-self.green_prob)
 
 
     def pdf_t(self, ctx, si, wo, t, active):
-        return  self.color_green.pdf(ctx, si, wo, active)*self.color_green_delay.eval_delay(t)*(self.green_prob) + \
-                self.color_red.pdf(ctx, si, wo, active)*self.color_red_delay.eval_delay(t)*(1-self.green_prob)
-
+        return  self.color_green.pdf(ctx, si, wo, active)*self.color_green_delay.eval_delay(t, si)*(self.green_prob) + \
+                self.color_red.pdf(ctx, si, wo, active)*self.color_red_delay.eval_delay(t, si)*(1-self.green_prob)
+    
     def traverse(self, callback):
         pass
 

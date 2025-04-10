@@ -20,5 +20,5 @@ class ConstantProfile(TemporalProfile):
     def sample_delay(self, si, sample1):
         return mi.Float(self.delay)
 
-    def eval_delay(self, si, delay):
+    def eval_delay(self, delay, si):
         return dr.select(delay == self.delay, 1.0, 0.0)

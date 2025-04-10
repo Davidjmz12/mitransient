@@ -39,5 +39,5 @@ class GaussianProfile(TemporalProfile):
             mi.Float(0)
         )
 
-    def eval_delay(self, si, delay):
+    def eval_delay(self, delay, si):
         return mi.Float(1)/mi.Float(self.sd)/dr.sqrt(2*dr.pi)*dr.exp(-1/2*dr.pow((delay-mi.mean)/mi.sd, 2))

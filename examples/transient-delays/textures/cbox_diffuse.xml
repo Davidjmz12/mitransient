@@ -53,7 +53,9 @@
         <float name="sd" value="1.0"/>
     </bsdf>
 
-    <bsdf type="ChlorophyllBSDF" id="chlor"></bsdf>
+    <bsdf type="ChlorophyllBSDF" id="chlor">
+        <float name="green-prob" value="0.8"/>
+    </bsdf>
 
     <bsdf type="diffuse" id="green">
         <rgb name="reflectance" value="0.105421, 0.37798, 0.076425"/>
