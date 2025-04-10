@@ -17,6 +17,8 @@ class ConstantTextureProfile(TemporalProfile):
         texture = props.get('delay-texture')
         return ConstantTextureProfile(texture)
 
-    def temporal_delay(self, si:mi.SurfaceInteraction3f, sample1:mi.Point2f) -> mi.Float:
-        delay = self.texture.eval_1(si)
-        return delay
+    def sample_delay(self, si, sample1):
+        return self.texture.eval_1(si)
+    
+    def eval_delay(self, si, delay):
+        raise NotImplementedError("eval_delay not implemented for ConstantTextureProfile")

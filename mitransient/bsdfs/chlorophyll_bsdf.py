@@ -19,9 +19,13 @@ class ChlorophyllBSDF(mi.BSDF):
             </bsdf>"''')
         self.color_green_delay = ConstantProfile(0.0)
 
-        self.green_prob = 0.5
+        self.green_prob = props.get('green-prob', 0.5)
+        if self.green_prob < 0 or self.green_prob > 1:
+            raise ValueError("green-prob must be between 0 and 1")
+        
+
         # Set the BSDF flags
-        self.m_flags = mi.BSDFFlags.DiffuseReflection | mi.BSDFFlags.FrontSide
+        self.m_flags = mi.BSDFFlags.DiffuseReflection
         self.m_components = [self.m_flags]
 
 

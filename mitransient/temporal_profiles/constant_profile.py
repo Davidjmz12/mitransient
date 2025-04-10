@@ -12,13 +12,13 @@ class ConstantProfile(TemporalProfile):
         return f"ConstantProfile[delay = {self.delay}]"
 
     @staticmethod
-    def create(props: mi.Properties) -> TemporalProfile:
+    def create(props) :
         props.mark_queried('delay')
         delay = float(props.get('delay', 0.0))
         return ConstantProfile(delay)
 
-    def sample_delay(self, si:mi.SurfaceInteraction3f, sample1:mi.Point2f) -> mi.Float:
+    def sample_delay(self, si, sample1):
         return mi.Float(self.delay)
 
-    def eval_delay(self, delay: mi.Float) -> mi.Float:
+    def eval_delay(self, si, delay):
         return dr.select(delay == self.delay, 1.0, 0.0)

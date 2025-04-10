@@ -30,3 +30,14 @@ class GaussianProfile(TemporalProfile):
             dr.sqrt(mi.Float(-2) * dr.log(sample1.x))*dr.cos(mi.Float(2) * mi.Float(dr.pi) * sample1.y) * mi.Float(self.sd) + mi.Float(self.mean),
             mi.Float(0)
         )
+
+    def sample_delay(self, si, sample1):
+        # Following the Box-Muller transform, sample a N(0,1) from two independent uniform U(0,1) samples
+
+        return dr.maximum(
+            dr.sqrt(mi.Float(-2) * dr.log(sample1.x))*dr.cos(mi.Float(2) * mi.Float(dr.pi) * sample1.y) * mi.Float(self.sd) + mi.Float(self.mean),
+            mi.Float(0)
+        )
+
+    def eval_delay(self, si, delay):
+        return mi.Float(1)/mi.Float(self.sd)/dr.sqrt(2*dr.pi)*dr.exp(-1/2*dr.pow((delay-mi.mean)/mi.sd, 2))
