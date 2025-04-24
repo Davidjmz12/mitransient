@@ -48,14 +48,15 @@
 
     <bsdf type="TransientBSDF" id="white-transient">
         <ref name="bsdf" id="white"/>
-        <string name="temporal-profile" value="gaussian"/>
-        <float name="mean" value="1.0"/>
-        <float name="sd" value="1.0"/>
+
+        <TemporalProfile type="ConstantTP" name="temporal-profile">
+            <float name="delay" value="1.0"/>
+        </TemporalProfile>
     </bsdf>
 
-    <bsdf type="ChlorophyllBSDF" id="chlor">
+    <!-- <bsdf type="ChlorophyllBSDF" id="chlor">
         <float name="green-prob" value="0.8"/>
-    </bsdf>
+    </bsdf> -->
 
     <bsdf type="diffuse" id="green">
         <rgb name="reflectance" value="0.105421, 0.37798, 0.076425"/>

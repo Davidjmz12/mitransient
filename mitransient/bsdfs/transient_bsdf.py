@@ -1,30 +1,5 @@
 import mitsuba as mi
 import drjit as dr
-from mitransient.temporal_profiles.constant_profile import ConstantProfile
-from mitransient.temporal_profiles.constant_texture_profile import ConstantTextureProfile
-from mitransient.temporal_profiles.gaussian_profile import GaussianProfile
-from mitransient.temporal_profiles.exponential_profile import ExponentialProfile
-
-def read_temporal_profile_(props):
-    """
-    Function that returns a temporal delay given by the properties' dictionary.
-
-    """
-
-    type_delay = props["temporal-profile"]
-
-    map_type_delay = {
-        "constant": ConstantProfile,
-        "gaussian": GaussianProfile,
-        "exponential": ExponentialProfile,
-        "constant-texture": ConstantTextureProfile
-    }
-
-    if type_delay in map_type_delay:
-        return map_type_delay[type_delay].create(props)
-    else:
-        raise Exception("Unknown delay profiling type")
-
 
 class TransientBSDF(mi.BSDF):
     """
@@ -41,11 +16,10 @@ class TransientBSDF(mi.BSDF):
             self.bsdf = props.get('bsdf')
 
         # Read the temporal profile
-        if not props.has_property('temporal-profile'):
-            self.temporal_profile = ConstantProfile(0)
-        else:
-            self.temporal_profile = read_temporal_profile_(props)
-
+        self.temporal_profile = props.get('temporal-profile')
+        if self.temporal_profile is None:
+            raise Exception("No temporal profile specified")
+        
         # Set flags equal to 'bsdf'
         self.m_components = self.bsdf.m_components
         self.m_flags = self.bsdf.m_flags
