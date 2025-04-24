@@ -167,11 +167,13 @@ class TransientPath(TransientADIntegrator):
                 si, sampler.next_2d(), True, active_em)
             active_em &= (ds.pdf != 0.0)
 
-            # ------------------ Detached BSDF sampling -------------------
+            # Sample a new direction from the BSDF, as well as the time delay associated with that interaction
             bsdf_sample, bsdf_weight, delay = bsdf.sample_t(bsdf_ctx, si,
                                                    sampler.next_1d(),
                                                    sampler.next_2d(),
                                                    active_next)
+            
+            # Add the delay to the distance
             distance += delay
 
             with dr.resume_grad(when=not primal):

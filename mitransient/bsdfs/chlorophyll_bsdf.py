@@ -1,6 +1,5 @@
 import mitsuba as mi
 import drjit as dr
-from mitransient.temporal_profiles.constant_profile import ConstantProfile
 
 class ChlorophyllBSDF(mi.BSDF):
     def __init__(self, props):
@@ -11,18 +10,25 @@ class ChlorophyllBSDF(mi.BSDF):
                 <rgb name="reflectance" value="0.570068, 0.0430135, 0.0443706"/>
             </bsdf>"'''
         )
-        self.color_red_delay = ConstantProfile(3.0)
+        
+        self.color_red_delay = props.get('red-delay', None)
+        assert self.color_red_delay is not None, "red-delay must be specified"
+        props.mark_queried('red-delay')
 
         self.color_green = mi.load_string(
             '''"<bsdf version='2.0.0' type='diffuse'>
                 <rgb name="reflectance" value="0.105421, 0.37798, 0.076425"/>
             </bsdf>"''')
-        self.color_green_delay = ConstantProfile(0.0)
+        
+        self.color_green_delay = props.get('green-delay', None)
+        assert self.color_green_delay is not None, "green-delay must be specified"
+        props.mark_queried('green-delay')
 
         self.green_prob = props.get('green-prob', 0.5)
-        if self.green_prob < 0 or self.green_prob > 1:
-            raise ValueError("green-prob must be between 0 and 1")
-        
+        assert self.green_prob is not None, "green-prob must be specified"
+        assert self.green_prob >= 0 and self.green_prob <= 1, "green-prob must be between 0 and 1"
+        props.mark_queried('green-prob')
+
 
         # Set the BSDF flags
         self.m_flags = mi.BSDFFlags.DiffuseReflection
@@ -54,12 +60,15 @@ class ChlorophyllBSDF(mi.BSDF):
         return  self.color_green.pdf(ctx, si, wo, active)*self.color_green_delay.eval_delay(t, si)*(self.green_prob) + \
                 self.color_red.pdf(ctx, si, wo, active)*self.color_red_delay.eval_delay(t, si)*(1-self.green_prob)
     
-    def traverse(self, callback):
-        pass
+    def traverse(self, cb):
+        cb.put_parameter('green-delay', self.temporal_profile, mi.ParamFlags.NonDifferentiable)
+        cb.put_parameter('red-delay', self.temporal_profile, mi.ParamFlags.NonDifferentiable)
+        cb.put_parameter('green-prob', self.bsdf, mi.ParamFlags.NonDifferentiable)
 
     def parameters_changed(self, keys):
-        pass
+        raise NotImplementedError("Not implemented yet...")
 
     def to_string(self):
-        return ""
+        return f"ChlorophyllBSDF[red-delay = {self.color_red_delay}, green-delay = {self.color_green_delay}, green-prob = {self.green_prob}]"
+
 mi.register_bsdf("ChlorophyllBSDF", lambda props: ChlorophyllBSDF(props))
