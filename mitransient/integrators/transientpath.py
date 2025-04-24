@@ -104,7 +104,6 @@ class TransientPath(TransientADIntegrator):
         prev_si = dr.zeros(mi.SurfaceInteraction3f)
         prev_bsdf_pdf = mi.Float(1.0)
         prev_bsdf_delta = mi.Bool(True)
-        prev_delay = mi.Float(0.0)
 
         if self.camera_unwarp:
             si = scene.ray_intersect(mi.Ray3f(ray),
@@ -168,6 +167,13 @@ class TransientPath(TransientADIntegrator):
                 si, sampler.next_2d(), True, active_em)
             active_em &= (ds.pdf != 0.0)
 
+            # ------------------ Detached BSDF sampling -------------------
+            bsdf_sample, bsdf_weight, delay = bsdf.sample_t(bsdf_ctx, si,
+                                                   sampler.next_1d(),
+                                                   sampler.next_2d(),
+                                                   active_next)
+            distance += delay
+
             with dr.resume_grad(when=not primal):
                 if dr.hint(not primal, mode='scalar'):
                     # Given the detached emitter sample, *recompute* its
@@ -181,7 +187,7 @@ class TransientPath(TransientADIntegrator):
                 # Evaluate BSDF * cos(theta) differentiably
                 wo = si.to_local(ds.d)
                 bsdf_value_em, bsdf_pdf_em = bsdf.eval_pdf_t(
-                    bsdf_ctx, si, wo, prev_delay, active_em)
+                    bsdf_ctx, si, wo, delay, active_em)
                 mis_em = dr.select(
                     ds.delta, 1, mis_weight(ds.pdf, bsdf_pdf_em))
                 Lr_dir = β * mis_em * bsdf_value_em * em_weight
@@ -189,15 +195,6 @@ class TransientPath(TransientADIntegrator):
             # Add contribution direct emitter sampling
             add_transient(Lr_dir, distance + ds.dist *
                           η, ray.wavelengths, active)
-
-            # ------------------ Detached BSDF sampling -------------------
-
-            bsdf_sample, bsdf_weight, delay = bsdf.sample_t(bsdf_ctx, si,
-                                                   sampler.next_1d(),
-                                                   sampler.next_2d(),
-                                                   active_next)
-            distance += delay
-
 
             # ---- Update loop variables based on current interaction -----
 
@@ -212,7 +209,6 @@ class TransientPath(TransientADIntegrator):
             prev_bsdf_pdf = bsdf_sample.pdf
             prev_bsdf_delta = mi.has_flag(
                 bsdf_sample.sampled_type, mi.BSDFFlags.Delta)
-            prev_delay = delay
 
             # -------------------- Stopping criterion ---------------------
 

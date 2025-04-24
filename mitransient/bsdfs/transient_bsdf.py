@@ -24,17 +24,18 @@ class TransientBSDF(mi.BSDF):
         self.m_components = self.bsdf.m_components
         self.m_flags = self.bsdf.m_flags
 
-    def sample(self, ctx, si, sample1, sample2, active = True):
-        return self.bsdf.sample(ctx, si, sample1, sample2, active)
+    def sample_t(self, ctx, si, sample1, sample2, active):
 
-    def eval(self, ctx, si, wo, active):
-        return self.bsdf.eval(ctx, si, wo, active)
+        bs, value = self.bsdf.sample(ctx, si, sample1, sample2, active)
+        delay = self.temporal_profile.sample_delay(si, sample1)
+        return bs, value, delay
 
-    def pdf(self, ctx, si, wo, active):
-        return self.bsdf.pdf(ctx, si, wo, active)
+    def eval_t(self, ctx, si, wo, t, active):
+        return self.bsdf.eval(ctx, si, wo, active)*self.temporal_profile.eval_delay(t, si)
 
-    def temporal_delay(self, si, random_sample, sample_data, active):
-        return dr.select(active, self.temporal_profile.temporal_delay(si, random_sample), 0)
+    def pdf_t(self, ctx, si, wo, t, active):
+        return  self.bsdf.pdf(ctx, si, wo, active)*self.temporal_profile.eval_delay(t, si)
+    
     
     def traverse(self, cb):
         cb.put_parameter('temporal-profile', self.temporal_profile, mi.ParamFlags.NonDifferentiable)

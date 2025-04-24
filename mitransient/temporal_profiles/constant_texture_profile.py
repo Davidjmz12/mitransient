@@ -14,4 +14,4 @@ class ConstantTextureProfile(mi.TemporalProfile):
     def eval_delay(self, delay, si):
         raise NotImplementedError("eval_delay not implemented for ConstantTextureProfile")
     
-mi.register_temporal_profile("constant-texture", lambda props: ConstantTextureProfile(props))
+mi.register_temporal_profile("ConstantTextureTP", lambda props: ConstantTextureProfile(props))

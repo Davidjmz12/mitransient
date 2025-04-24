@@ -4,8 +4,8 @@ import drjit as dr
 class ConstantProfile(mi.TemporalProfile):
     def __init__(self, props):
         mi.TemporalProfile.__init__(self, props)
-
         self.delay = props.get('delay', 0.0)
+        props.mark_queried('delay')
 
     def to_string(self) -> str:
         return f"ConstantProfile[delay = {self.delay}]"

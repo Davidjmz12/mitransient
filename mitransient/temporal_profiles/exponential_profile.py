@@ -1,26 +1,19 @@
 import mitsuba as mi
-from mitransient.temporal_profiles.common import TemporalProfile
 import drjit as dr
 
-class ExponentialProfile(TemporalProfile):
-    def __init__(self, lambd:float):
-        super().__init__()
-        self.lambd = lambd
+class ExponentialProfile(mi.TemporalProfile):
+    def __init__(self, props: mi.Properties):
+        mi.TemporalProfile.__init__(self, props)
+        self._lambda = props.get('lambda', 1.0)
+        props.mark_queried('lambda')
 
     def to_string(self) -> str:
-        return f"ExponentialProfile[mean = {self.lambd}]"
-
-    @staticmethod
-    def create(props: mi.Properties) -> TemporalProfile:
-        props.mark_queried('mean')
-        mean = float(props.get('mean', 0.0))
-
-        if mean < 0.0:
-            raise ValueError(f"ExponentialProfile mean is negative: {mean}")
-        return ExponentialProfile(mean)
+        return f"ExponentialProfile[lambda = {self.lambd}]"
 
     def sample_delay(self, si, sample1):
         return mi.Float(-1.0)/mi.Float(self.lambd)*dr.log(mi.Float(1)-sample1.x)
     
     def eval_delay(self, delay, si):
         return mi.Float(self.lambd)*dr.exp(-mi.Float(delay)*mi.Float(self.lambd))
+    
+mi.register_temporal_profile("ExponentialTP", lambda props: ExponentialProfile(props))
