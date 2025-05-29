@@ -6,7 +6,10 @@ class ExponentialProfile(mi.TemporalProfile):
     def __init__(self, props: mi.Properties):
         mi.TemporalProfile.__init__(self, props)
 
-        self.lambd = TransientTexture(props, "lambda")
+        def check_lambda(value):
+            dr.assert_true(value > 0, "Lambda must be positive for ExponentialProfile")
+
+        self.lambd = TransientTexture(props, "lambda", check_lambda)
 
 
     def to_string(self) -> str:
@@ -18,7 +21,6 @@ class ExponentialProfile(mi.TemporalProfile):
     
     def eval_delay(self, delay, si):
         lambda_value = self.lambd.eval_1(si)
-        prop = self.lambd.pdf_spectrum(si)
-        return mi.Float(lambda_value)*dr.exp(-mi.Float(delay)*mi.Float(lambda_value)) * prop
+        return mi.Float(lambda_value)*dr.exp(-mi.Float(delay)*mi.Float(lambda_value))
     
 mi.register_temporal_profile("ExponentialTP", lambda props: ExponentialProfile(props))

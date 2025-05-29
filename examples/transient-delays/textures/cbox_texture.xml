@@ -48,9 +48,8 @@
 
     <bsdf type="diffuse" id="white-texture">
         <texture type="bitmap" name="reflectance">
-            <string name="filename" value="texture_3.exr"/>
+            <string name="filename" value="texture.exr"/>
             <string name="filter_type" value="nearest"/>
-            <boolean name="raw" value="true"/>
         </texture>
     </bsdf>
 
@@ -58,13 +57,12 @@
     <bsdf type="TransientBSDF" id="white-transient">
         <ref name="bsdf" id="white"/>
 
-        <TemporalProfile type="PosEpanTP" name="temporal-profile">
-            <texture type="bitmap" name="shift">
-                <string name="filename" value="texture_3.exr"/>
+        <TemporalProfile type="ConstantTP" name="temporal-profile">
+            <texture type="bitmap" name="delay">
+                <string name="filename" value="texture.exr"/>
                 <string name="filter_type" value="nearest"/>
-                <boolean name="raw" value="true"/>
+                <!-- <boolean name="raw" value="true"/> -->
             </texture>
-            <float name="range" value="1"/>
         </TemporalProfile>
     </bsdf>
 
