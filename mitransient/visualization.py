@@ -8,6 +8,11 @@ def tonemap_transient(transient, scaling=1.0):
     return transient / channel_top * scaling
 
 
+def gamma_tonemap_transient(transient, gamma=2.2, scaling=1.0):
+    """Applies a gamma tonemapping to the transient image."""
+    channel_top = np.quantile(np.array(transient), 0.99)
+    return (transient / channel_top * scaling) ** (1 / gamma)
+
 def save_video(path, transient, axis_video, fps=24, display_video=False):
     """Saves the transient image in video format (.mp4)."""
     import cv2

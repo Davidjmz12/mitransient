@@ -3,10 +3,6 @@ import importlib
 import mitsuba as mi
 
 if mi.variant() is not None and not mi.variant().startswith('scalar'):
-    from . import transient_bsdf
-    importlib.reload(transient_bsdf)
-
-    from . import composed_bsdf
-    importlib.reload(composed_bsdf)
-
+    from . import transient_texture
+    importlib.reload(transient_texture)
 del importlib, mi
