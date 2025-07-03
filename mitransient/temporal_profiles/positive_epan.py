@@ -37,6 +37,6 @@ class PosEpanProfile(mi.TemporalProfile):
         dr.assert_true(shift_value >= range_value, "Shift value must be greater than or equal to range for PosEpanProfile") 
         
         pdf = 3/(4*range_value) * (1 - dr.power((delay - shift_value)/range_value, 2))
-        return dr.maximum(pdf, 0.0)
+        return dr.minimum(dr.maximum(pdf, 0.0), 1.0)
     
 mi.register_temporal_profile("PosEpanTP", lambda props: PosEpanProfile(props))

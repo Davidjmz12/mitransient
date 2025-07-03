@@ -6,6 +6,7 @@ if mi.variant() is not None and not mi.variant().startswith('scalar'):
     from . import transient_bsdf
     importlib.reload(transient_bsdf)
 
-    from . import chlorophyll_bsdf
-    importlib.reload(chlorophyll_bsdf)
+    from . import composed_bsdf
+    importlib.reload(composed_bsdf)
+
 del importlib, mi
