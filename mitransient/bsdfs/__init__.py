@@ -3,10 +3,10 @@ import importlib
 import mitsuba as mi
 
 if mi.variant() is not None and not mi.variant().startswith('scalar'):
-    from . import transient_bsdf
-    importlib.reload(transient_bsdf)
+    from . import separable_transient
+    importlib.reload(separable_transient)
 
-    from . import composed_bsdf
-    importlib.reload(composed_bsdf)
+    from . import composed_transient
+    importlib.reload(composed_transient)
 
 del importlib, mi
