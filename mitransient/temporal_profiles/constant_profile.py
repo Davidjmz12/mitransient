@@ -3,6 +3,25 @@ import drjit as dr
 from mitransient.textures.transient_texture import TransientTexture
 
 class ConstantProfile(mi.TemporalProfile):
+    r"""
+    
+    .. temporalprofile-constant:
+    
+    Constant Temporal Profile (:monosp:`ConstantTP`)
+    -------------------------------------------------
+
+    A temporal profile that represents a constant delay in light transport. 
+    This profile is characterized by a fixed delay value, meaning that all light interactions are assumed to occur after this specific time delay.
+    
+
+    .. pluginparameters::
+        * - delay
+            - |TransientTexture|
+            - The delay value, represented as a transient texture. 
+            This allows for spatially varying delays across the surface.
+            It must be non-negative.
+    """
+
     def __init__(self, props:mi.Properties):
         mi.TemporalProfile.__init__(self, props)
         

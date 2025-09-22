@@ -4,6 +4,31 @@ from mitransient.textures.transient_texture import TransientTexture
 
 class PosEpanProfile(mi.TemporalProfile):
     def __init__(self, props: mi.Properties):
+        r"""
+
+        .. temporalprofile-positive_epan:
+
+        Positive Epanechnikov Temporal Profile (:monosp:`PosEpanTP`)
+        -------------------------------------------------
+
+        A temporal profile that represents a positive Epanechnikov distribution in light transport. 
+        This profile is characterized by a range and a shift parameter, which define the deviation and 
+        mean of the distribution, respectively. The positive Epanechnikov distribution is a
+        "bounded" gaussian-like distribution easy to sample from.
+
+        .. pluginparameters::
+            * - range
+                - |TransientTexture|
+                - The range (deviation) of the distribution, represented as a transient texture.
+                This allows for spatially varying ranges across the surface.
+                It must be strictly positive.
+            * - shift
+                - |TransientTexture|
+                - The shift (mean) of the distribution, represented as a transient texture.
+                This allows for spatially varying shifts across the surface.
+                It must be non-negative and greater than or equal to the range to ensure positivity of delays.
+
+        """
         mi.TemporalProfile.__init__(self, props)
         
         def check_range(value):

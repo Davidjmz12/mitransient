@@ -3,6 +3,24 @@ import drjit as dr
 from mitransient.textures.transient_texture import TransientTexture
 
 class ExponentialProfile(mi.TemporalProfile):
+    r"""
+
+    .. temporalprofile-exponential:
+    
+    Exponential Temporal Profile (:monosp:`ExponentialTP`)
+    -------------------------------------------------
+
+    A temporal profile that represents an exponential decay in light transport. 
+    This profile is characterized by a decay rate (lambda), which defines how quickly the intensity of
+    light interactions decreases over time.
+
+    .. pluginparameters::
+        * - lambda
+            - |TransientTexture|
+            - The decay rate, represented as a transient texture.
+            This allows for spatially varying decay rates across the surface.
+            It must be strictly positive.
+    """
     def __init__(self, props: mi.Properties):
         mi.TemporalProfile.__init__(self, props)
 

@@ -1,8 +1,26 @@
 import mitsuba as mi
 
 class Separable(mi.BSDF):
-    """
-    Class to represent a BSDF with a temporal delay profile.
+    r"""
+
+    .. bsdf-separable:
+    
+    Separable BSDF (:monosp:`Separable`)
+    -------------------------------------------------
+
+    A transient BSDF model that separates the spatial and temporal components of light transport. 
+    It combines a spatial BSDF with a temporal profile (distribution) to model time-resolved light interactions.
+
+
+    .. pluginparameters::
+        * - bsdf
+            - |bsdf|
+            - The spatial BSDF component.
+        * - tp
+            - |TemporalProfile|
+            - The temporal profile component. It models the time distribution of light interactions.
+
+    
     """
 
     def __init__(self, props):

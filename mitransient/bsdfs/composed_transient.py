@@ -2,7 +2,31 @@ import mitsuba as mi
 import drjit as dr
 
 class Composed(mi.BSDF):
+    r"""
+
+    .. bsdf-composed:
+
+    Composed BSDF (:monosp:`Composed`)
+    -------------------------------------------------
+
+    A transient BSDF model that composes two other transient BSDFs, mixing their contributions based on a specified weight.
+
+    .. pluginparameters::
+
+        * - bsdf-1
+            - |bsdf|
+            - The first BSDF to be mixed.
+        * - bsdf-2
+            - |bsdf|
+            - The second BSDF to be mixed.
+        * - weight
+            - |float|
+            - The mixing weight for the first BSDF. Must be in the range [0, 1]. The weight for the second BSDF is implicitly (1 - weight).
+    
+    """
+
     def __init__(self, props):
+
         mi.BSDF.__init__(self, props)
 
         self.bsdf1 = props.get("bsdf-1", None)
